@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundial 2026 Tracker</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            background-image: 
+                linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"><text y=".9em" font-size="80">⚽</text></svg>'),
+                url('https://i.pinimg.com/originals/f3/ca/a9/f3caa9f21f1a5666710b1a9b2b516812.jpg');
+            background-size: cover, 150px, cover;
+            background-attachment: fixed;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="selection:bg-blue-500/30">
+    <div id="app"></div>
+
+    <script>
+        // TODO TU CÓDIGO JAVASCRIPT SE MANTIENE EXACTAMENTE IGUAL AQUÍ
+        // (Pega aquí todo el contenido desde const teamCodes = {...} hasta el window.onload)
+        
+        const teamCodes = {
+            'México': 'mx', 'Sudáfrica': 'za', 'Corea del Sur': 'kr', 'Rep. Checa': 'cz',
+            'Canadá': 'ca', 'Bosnia': 'ba', 'Qatar': 'qa', 'Suiza': 'ch',
+            'Brasil': 'br', 'Marruecos': 'ma', 'Haití': 'ht', 'Escocia': 'gb-sct',
+            'EE. UU.': 'us', 'Paraguay': 'py', 'Australia': 'au', 'Turquía': 'tr',
+            'Alemania': 'de', 'Curazao': 'cw', 'Costa de Marfil': 'ci', 'Ecuador': 'ec',
+            'Países Bajos': 'nl', 'Japón': 'jp', 'Suecia': 'se', 'Túnez': 'tn',
+            'Bélgica': 'be', 'Egipto': 'eg', 'Irán': 'ir', 'Nueva Zelanda': 'nz',
+            'España': 'es', 'Cabo Verde': 'cv', 'Arabia Saudita': 'sa', 'Uruguay': 'uy',
+            'Francia': 'fr', 'Senegal': 'sn', 'Irak': 'iq', 'Noruega': 'no',
+            'Argentina': 'ar', 'Argelia': 'dz', 'Austria': 'at', 'Jordania': 'jo',
+            'Portugal': 'pt', 'RD Congo': 'cd', 'Uzbekistán': 'uz', 'Colombia': 'co',
+            'Inglaterra': 'gb-eng', 'Croacia': 'hr', 'Ghana': 'gh', 'Panamá': 'pa'
+        };
+
+        const groupsData = {
+            A: ['México', 'Sudáfrica', 'Corea del Sur', 'Rep. Checa'], B: ['Canadá', 'Bosnia', 'Qatar', 'Suiza'],
+            C: ['Brasil', 'Marruecos', 'Haití', 'Escocia'], D: ['EE. UU.', 'Paraguay', 'Australia', 'Turquía'],
+            E: ['Alemania', 'Curazao', 'Costa de Marfil', 'Ecuador'], F: ['Países Bajos', 'Japón', 'Suecia', 'Túnez'],
+            G: ['Bélgica', 'Egipto', 'Irán', 'Nueva Zelanda'], H: ['España', 'Cabo Verde', 'Arabia Saudita', 'Uruguay'],
+            I: ['Francia', 'Senegal', 'Irak', 'Noruega'], J: ['Argentina', 'Argelia', 'Austria', 'Jordania'],
+            K: ['Portugal', 'RD Congo', 'Uzbekistán', 'Colombia'], L: ['Inglaterra', 'Croacia', 'Ghana', 'Panamá']
+        };
+
+        const groupVenues = {
+            A: ['Estadio Ciudad de México - Ciudad de México, México', 'Estadio Guadalajara - Guadalajara, México', 'Estadio Monterrey - Monterrey, México', 'Estadio Ciudad de México - Ciudad de México, México', 'Estadio Guadalajara - Guadalajara, México', 'Estadio Monterrey - Monterrey, México'],
+            B: ['Estadio Toronto - Toronto, Canadá', 'Estadio Bahía de San Francisco - Bahía de San Francisco, EE. UU.', 'Estadio BC Place Vancouver - Vancouver, Canadá', 'Estadio Seattle - Seattle, EE. UU.', 'Estadio Toronto - Toronto, Canadá', 'Estadio BC Place Vancouver - Vancouver, Canadá'],
+            C: ['Estadio Nueva York Nueva Jersey - Nueva York/Nueva Jersey, EE. UU.', 'Estadio Boston - Boston, EE. UU.', 'Estadio Atlanta - Atlanta, EE. UU.', 'Estadio Miami - Miami, EE. UU.', 'Estadio Filadelfia - Filadelfia, EE. UU.', 'Estadio Boston - Boston, EE. UU.'],
+            D: ['Estadio Los Ángeles - LA, EE. UU.', 'Estadio BC Place Vancouver - Vancouver, Canadá', 'Estadio Bahía de San Francisco - Bahía de San Francisco, EE. UU.', 'Estadio Seattle - Seattle, EE. UU.', 'Estadio Los Ángeles - LA, EE. UU.', 'Estadio Bahía de San Francisco - Bahía de San Francisco, EE. UU.'],
+            E: ['Estadio Houston - Houston, EE. UU.', 'Estadio Filadelfia - Filadelfia, EE. UU.', 'Estadio Toronto - Toronto, Canadá', 'Estadio Kansas City - Kansas City, EE. UU.', 'Estadio Nueva York Nueva Jersey - Nueva York/Nueva Jersey, EE. UU.', 'Estadio Filadelfia - Filadelfia, EE. UU.'],
+            F: ['Estadio Dallas - Dallas, EE. UU.', 'Estadio Monterrey - Monterrey, México', 'Estadio Houston - Houston, EE. UU.', 'Estadio Monterrey - Monterrey, México', 'Estadio Dallas - Dallas, EE. UU.', 'Estadio Kansas City - Kansas City, EE. UU.'],
+            G: ['Estadio Seattle - Seattle, EE. UU.', 'Estadio Los Ángeles - LA, EE. UU.', 'Estadio Los Ángeles - LA, EE. UU.', 'Estadio BC Place Vancouver - Vancouver, Canadá', 'Estadio Seattle - Seattle, EE. UU.', 'Estadio BC Place Vancouver - Vancouver, Canadá'],
+            H: ['Estadio Atlanta - Atlanta, EE. UU.', 'Estadio Miami - Miami, EE. UU.', 'Estadio Atlanta - Atlanta, EE. UU.', 'Estadio Miami - Miami, EE. UU.', 'Estadio Houston - Houston, EE. UU.', 'Estadio Guadalajara - Guadalajara, México'],
+            I: ['Estadio Nueva York Nueva Jersey - Nueva York/Nueva Jersey, EE. UU.', 'Estadio Boston - Boston, EE. UU.', 'Estadio Boston - Boston, EE. UU.', 'Estadio Toronto - Toronto, Canadá', 'Estadio Filadelfia - Filadelfia, EE. UU.', 'Estadio Nueva York Nueva Jersey - Nueva York/Nueva Jersey, EE. UU.'],
+            J: ['Estadio Kansas City - Kansas City, EE. UU.', 'Estadio Bahía de San Francisco - Bahía de San Francisco, EE. UU.', 'Estadio Dallas - Dallas, EE. UU.', 'Estadio Bahía de San Francisco - Bahía de San Francisco, EE. UU.', 'Estadio Kansas City - Kansas City, EE. UU.', 'Estadio Dallas - Dallas, EE. UU.'],
+            K: ['Estadio Houston - Houston, EE. UU.', 'Estadio Ciudad de México - Ciudad de México, México', 'Estadio Houston - Houston, EE. UU.', 'Estadio Atlanta - Atlanta, EE. UU.', 'Estadio Miami - Miami, EE. UU.', 'Estadio Atlanta - Atlanta, EE. UU.'],
+            L: ['Estadio Dallas - Dallas, EE. UU.', 'Estadio Toronto - Toronto, Canadá', 'Estadio Nueva York Nueva Jersey - Nueva York/Nueva Jersey, EE. UU.', 'Estadio Filadelfia - Filadelfia, EE. UU.', 'Estadio Boston - Boston, EE. UU.', 'Estadio Toronto - Toronto, Canadá']
+        };
+
+        const generateGroupMatches = (group, teams) => {
+            const groupDates = {
+                'A': ['11 de jun', '11 de jun', '18 de jun', '18 de jun', '24 de jun', '24 de jun'],
+                'B': ['12 de jun', '13 de jun', '18 de jun', '18 de jun', '24 de jun', '24 de jun'],
+                'C': ['13 de jun', '13 de jun', '19 de jun', '19 de jun', '24 de jun', '24 de jun'],
+                'D': ['12 de jun', '13 de jun', '19 de jun', '19 de jun', '25 de jun', '25 de jun'],
+                'E': ['14 de jun', '14 de jun', '20 de jun', '20 de jun', '25 de jun', '25 de jun'],
+                'F': ['14 de jun', '14 de jun', '20 de jun', '20 de jun', '25 de jun', '25 de jun'],
+                'G': ['15 de jun', '15 de jun', '21 de jun', '21 de jun', '26 de jun', '26 de jun'],
+                'H': ['15 de jun', '15 de jun', '21 de jun', '21 de jun', '26 de jun', '26 de jun'],
+                'I': ['16 de jun', '16 de jun', '22 de jun', '22 de jun', '26 de jun', '26 de jun'],
+                'J': ['16 de jun', '16 de jun', '22 de jun', '22 de jun', '27 de jun', '27 de jun'],
+                'K': ['17 de jun', '17 de jun', '23 de jun', '23 de jun', '27 de jun', '27 de jun'],
+                'L': ['17 de jun', '17 de jun', '23 de jun', '23 de jun', '27 de jun', '27 de jun']
+            };
+            const d = groupDates[group];
+            const v = groupVenues[group];
+            return [
+                { t1: teams[0], t2: teams[1], date: d[0], venue: v[0] },
+                { t1: teams[2], t2: teams[3], date: d[1], venue: v[1] },
+                { t1: teams[0], t2: teams[2], date: d[2], venue: v[2] },
+                { t1: teams[1], t2: teams[3], date: d[3], venue: v[3] },
+                { t1: teams[0], t2: teams[3], date: d[4], venue: v[4] },
+                { t1: teams[1], t2: teams[2], date: d[5], venue: v[5] }
+            ];
+        };
+
+        const roundOf32Matchups = [
+            { id: 73, t1: '2A', t2: '2B', date: '28 de jun', venue: 'Estadio Los Ángeles - LA, EE. UU.' },
+            { id: 74, t1: '1E', t2: '3 A/B/C/D/F', date: '29 de jun', venue: 'Estadio Boston - Boston, EE. UU.' },
+            { id: 75, t1: '1F', t2: '2C', date: '29 de jun', venue: 'Estadio Monterrey - Monterrey, México' },
+            { id: 76, t1: '1C', t2: '2F', date: '29 de jun', venue: 'Estadio Houston - Houston, EE. UU.' },
+            { id: 77, t1: '1I', t2: '3 C/D/F/G/H', date: '30 de jun', venue: 'Estadio Nueva York Nueva Jersey - Nueva York/Nueva Jersey, EE. UU.' },
+            { id: 78, t1: '2E', t2: '2I', date: '30 de jun', venue: 'Estadio Dallas - Dallas, EE. UU.' },
+            { id: 79, t1: '1A', t2: '3 C/E/F/H/I', date: '30 de jun', venue: 'Estadio Ciudad de México - Ciudad de México, México' },
+            { id: 80, t1: '1L', t2: '3 E/H/I/J/K', date: '1 de jul', venue: 'Estadio Atlanta - Atlanta, EE. UU.' },
+            { id: 81, t1: '1D', t2: '3 B/E/F/I/J', date: '1 de jul', venue: 'Estadio Bahía de San Francisco - Bahía de San Francisco, EE. UU.' },
+            { id: 82, t1: '1G', t2: '3 A/E/H/I/J', date: '1 de jul', venue: 'Estadio Seattle - Seattle, EE. UU.' },
+            { id: 83, t1: '2K', t2: '2L', date: '2 de jul', venue: 'Estadio Toronto - Toronto, Canadá' },
+            { id: 84, t1: '1H', t2: '2J', date: '2 de jul', venue: 'Estadio Los Ángeles - LA, EE. UU.' },
+            { id: 85, t1: '1B', t2: '3 E/F/G/I/J', date: '2 de jul', venue: 'Estadio BC Place Vancouver - Vancouver, Canadá' },
+            { id: 86, t1: '1J', t2: '2H', date: '3 de jul', venue: 'Estadio Miami - Miami, EE. UU.' },
+            { id: 87, t1: '1K', t2: '3 D/E/I/J/L', date: '3 de jul', venue: 'Estadio Kansas City - Kansas City, EE. UU.' },
+            { id: 88, t1: '2D', t2: '2G', date: '3 de jul', venue: 'Estadio Dallas - Dallas, EE. UU.' }
+        ];
+
+        const roundOf16Dates = [
+            { id: 89, date: '4 de jul', venue: 'Estadio Filadelfia - Filadelfia, EE. UU.' },
+            { id: 90, date: '4 de jul', venue: 'Estadio Houston - Houston, EE. UU.' },
+            { id: 93, date: '6 de jul', venue: 'Estadio Dallas - Dallas, EE. UU.' },
+            { id: 94, date: '6 de jul', venue: 'Estadio Seattle - Seattle, EE. UU.' },
+            { id: 91, date: '5 de jul', venue: 'Estadio Nueva York Nueva Jersey - Nueva York/Nueva Jersey, EE. UU.' },
+            { id: 92, date: '5 de jul', venue: 'Estadio Ciudad de México - Ciudad de México, México' },
+            { id: 95, date: '7 de jul', venue: 'Estadio Atlanta - Atlanta, EE. UU.' },
+            { id: 96, date: '7 de jul', venue: 'Estadio BC Place Vancouver - Vancouver, Canadá' }
+        ];
+
+        const quarterFinalDates = [
+            { id: 97, date: '9 de jul', venue: 'Estadio Boston - Boston, EE. UU.' },
+            { id: 98, date: '10 de jul', venue: 'Estadio Los Ángeles - LA, EE. UU.' },
+            { id: 99, date: '11 de jul', venue: 'Estadio Miami - Miami, EE. UU.' },
+            { id: 100, date: '11 de jul', venue: 'Estadio Kansas City - Kansas City, EE. UU.' }
+        ];
+
+        const semiFinalDates = [
+            { id: 101, date: '14 de jul', venue: 'Estadio Dallas - Dallas, EE. UU.' },
+            { id: 102, date: '15 de jul', venue: 'Estadio Atlanta - Atlanta, EE. UU.' }
+        ];
+
+        const finalDate = { id: 104, date: '19 de jul', venue: 'Estadio Nueva York Nueva Jersey - Nueva York/Nueva Jersey, EE. UU.' };
+
+        const quinielaMatchesBase = [
+            { id: 1, group: 'A', idx: 0, t1: 'México', t2: 'Sudáfrica', defaultBet: 'L' },
+            { id: 2, group: 'A', idx: 1, t1: 'Corea del Sur', t2: 'Rep. Checa', defaultBet: 'E' },
+            { id: 3, group: 'B', idx: 0, t1: 'Canadá', t2: 'Bosnia', defaultBet: 'L' },
+            { id: 4, group: 'D', idx: 0, t1: 'EE. UU.', t2: 'Paraguay', defaultBet: 'L' },
+            { id: 5, group: 'C', idx: 0, t1: 'Brasil', t2: 'Marruecos', defaultBet: 'L' },
+            { id: 6, group: 'D', idx: 1, t1: 'Australia', t2: 'Turquía', defaultBet: 'E' },
+            { id: 7, group: 'F', idx: 0, t1: 'Países Bajos', t2: 'Japón', defaultBet: 'L' },
+            { id: 8, group: 'E', idx: 1, t1: 'Costa de Marfil', t2: 'Ecuador', defaultBet: 'E' },
+            { id: 9, group: 'F', idx: 1, t1: 'Suecia', t2: 'Túnez', defaultBet: 'L' },
+            { id: 10, group: 'G', idx: 0, t1: 'Bélgica', t2: 'Egipto', defaultBet: 'L' },
+            { id: 11, group: 'G', idx: 1, t1: 'Irán', t2: 'Nueva Zelanda', defaultBet: 'L' },
+            { id: 12, group: 'I', idx: 0, t1: 'Francia', t2: 'Senegal', defaultBet: 'L' },
+            { id: 13, group: 'L', idx: 0, t1: 'Inglaterra', t2: 'Croacia', defaultBet: 'L' },
+            { id: 14, group: 'L', idx: 1, t1: 'Ghana', t2: 'Panamá', defaultBet: 'L' }
+        ];
+
+        let state = {
+            activeTab: 'grupos',
+            groupScores: {},
+            knockoutScores: {},
+            quinielaBets: {},
+            activeQuinielaMatches: [...quinielaMatchesBase],
+            showQuinielaModal: false,
+            customSize: 14,
+            customSelections: [],
+            wildcardSelections: {},
+            quinielas: [],
+            currentQuinielaId: 1,
+            showRenameModal: false,
+            renameId: null,
+            renameText: ''
+        };
+
+        // Inicializar apuestas por defecto
+        quinielaMatchesBase.forEach(m => state.quinielaBets[m.id] = m.defaultBet);
+        state.quinielas.push({ id: 1, name: 'Mi Quiniela Principal', matches: [...quinielaMatchesBase], bets: {...state.quinielaBets} });
+
+        // Motor de Persistencia Local
+        function saveState() {
+            try { localStorage.setItem('mundial2026_tracker_data_v2', JSON.stringify(state)); } 
+            catch (e) { console.error("Error guardando localmente:", e); }
+        }
+
+        function loadState() {
+            try {
+                const savedData = localStorage.getItem('mundial2026_tracker_data_v2');
+                if (savedData) {
+                    const parsed = JSON.parse(savedData);
+                    if (parsed.groupScores) state.groupScores = parsed.groupScores;
+                    if (parsed.knockoutScores) state.knockoutScores = parsed.knockoutScores;
+                    if (parsed.quinielaBets) state.quinielaBets = parsed.quinielaBets;
+                    if (parsed.activeQuinielaMatches) state.activeQuinielaMatches = parsed.activeQuinielaMatches;
+                    if (parsed.customSelections) state.customSelections = parsed.customSelections;
+                    if (parsed.customSize) state.customSize = parsed.customSize;
+                    if (parsed.wildcardSelections) state.wildcardSelections = parsed.wildcardSelections;
+                    if (parsed.quinielas && parsed.quinielas.length > 0) {
+                        state.quinielas = parsed.quinielas;
+                        state.currentQuinielaId = parsed.currentQuinielaId || parsed.quinielas[0].id;
+                        const act = state.quinielas.find(q => q.id === state.currentQuinielaId) || state.quinielas[0];
+                        state.activeQuinielaMatches = [...act.matches];
+                        state.quinielaBets = {...act.bets};
+                    }
+                }
+            } catch (e) { console.error("Error cargando datos locales:", e); }
+        }
+
+        function getFlag(team, classes = "w-6 h-4 sm:w-7 sm:h-5 object-cover rounded-[2px] shadow-[0_0_2px_rgba(0,0,0,0.5)] flex-shrink-0") {
+            if (!team) return `<div class="${classes} bg-slate-700"></div>`;
+            const code = teamCodes[team];
+            if (!code) return `<span class="text-xs">⏳</span>`;
+            return `<img src="https://flagcdn.com/w40/${code}.png" alt="${team}" class="${classes}" />`;
+        }
+
+        function getStandings() {
+            const tables = {};
+            Object.keys(groupsData).forEach(group => {
+                const teams = groupsData[group];
+                const stats = {};
+                teams.forEach(t => stats[t] = { pts: 0, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0 });
+
+                const matches = generateGroupMatches(group, teams);
+                matches.forEach((match, idx) => {
+                    const score = state.groupScores[`${group}_${idx}`];
+                    if (score && score.t1 !== '' && score.t2 !== '' && score.t1 !== undefined && score.t2 !== undefined) {
+                        const s1 = parseInt(score.t1);
+                        const s2 = parseInt(score.t2);
+                        stats[match.t1].p += 1; stats[match.t2].p += 1;
+                        stats[match.t1].gf += s1; stats[match.t2].gf += s2;
+                        stats[match.t1].ga += s2; stats[match.t2].ga += s1;
+                        
+                        if (s1 > s2) { stats[match.t1].pts += 3; stats[match.t1].w += 1; stats[match.t2].l += 1; }
+                        else if (s2 > s1) { stats[match.t2].pts += 3; stats[match.t2].w += 1; stats[match.t1].l += 1; }
+                        else { stats[match.t1].pts += 1; stats[match.t2].pts += 1; stats[match.t1].d += 1; stats[match.t2].d += 1; }
+                    }
+                });
+
+                Object.keys(stats).forEach(t => stats[t].gd = stats[t].gf - stats[t].ga);
+                tables[group] = Object.entries(stats).sort((a, b) => {
+                    if (b[1].pts !== a[1].pts) return b[1].pts - a[1].pts;
+                    if (b[1].gd !== a[1].gd) return b[1].gd - a[1].gd;
+                    return b[1].gf - a[1].gf;
+                });
+            });
+            return tables;
+        }
+
+        function getAdvancingTeams() {
+            const st = getStandings();
+            const seeds = {};
+            Object.keys(st).forEach(group => {
+                const teams = st[group];
+                if (teams[0]) seeds[`1${group}`] = teams[0][0];
+                if (teams[1]) seeds[`2${group}`] = teams[1][0];
+            });
+            return seeds;
+        }
+
+        function getThirdPlaceTeam(group) {
+            const st = getStandings()[group];
+            return st && st[2] ? st[2][0] : null;
+        }
+
+        window.setWildcard = function(key, val) {
+            state.wildcardSelections[key] = val;
+            saveState();
+            renderApp();
+        };
+
+        function getWinnerKnockout(stage, matchNum) {
+            const score = state.knockoutScores[`${stage}_${matchNum}`];
+            if (!score) return null;
+            const s1 = parseInt(score.s1);
+            const s2 = parseInt(score.s2);
+            if (isNaN(s1) || isNaN(s2)) return null;
+            
+            let t1 = getKnockoutTeam(stage, matchNum, 0);
+            let t2 = getKnockoutTeam(stage, matchNum, 1);
+            
+            if (s1 > s2) return t1;
+            if (s2 > s1) return t2;
+            if (s1 === s2) {
+                const p1 = parseInt(score.p1);
+                const p2 = parseInt(score.p2);
+                if (!isNaN(p1) && !isNaN(p2)) {
+                    if (p1 > p2) return t1;
+                    if (p2 > p1) return t2;
+                }
+            }
+            return null;
+        }
+
+        function getKnockoutTeam(stage, matchNum, teamIdx) {
+            if (stage === '16vos') {
+                const matchup = roundOf32Matchups[matchNum - 1];
+                if (!matchup) return null;
+                const code = teamIdx === 0 ? matchup.t1 : matchup.t2;
+                
+                if (code.startsWith('3 ')) {
+                    const matchKey = `16vos_${matchNum}_t${teamIdx+1}`;
+                    return state.wildcardSelections[matchKey] || null;
+                }
+                
+                const seeds = getAdvancingTeams();
+                return seeds[code] || null;
+            }
+            
+            if (stage === '8vos') {
+                const mapping8vos = [
+                    [2, 5], [1, 3], [11, 12], [9, 10], [4, 6], [7, 8], [14, 16], [13, 15]
+                ];
+                const prevMatchNum = mapping8vos[matchNum - 1][teamIdx];
+                return getWinnerKnockout('16vos', prevMatchNum);
+            }
+            
+            let prevStage = stage === '8vos' ? '16vos' : stage === '4tos' ? '8vos' : stage === 'semis' ? '4tos' : 'semis';
+            const prevMatchNum = (matchNum - 1) * 2 + teamIdx + 1;
+            return getWinnerKnockout(prevStage, prevMatchNum);
+        }
+
+        window.setTab = function(tab) { state.activeTab = tab; renderApp(); };
+
+        window.setScore = function(group, idx, team, val) {
+            if (!state.groupScores[`${group}_${idx}`]) state.groupScores[`${group}_${idx}`] = {t1: '', t2: ''};
+            state.groupScores[`${group}_${idx}`][team] = val === '' ? '' : Math.max(0, parseInt(val));
+            saveState();
+            renderApp();
+        };
+
+        window.setKnockout = function(stage, matchNum, field, val) {
+            if (!state.knockoutScores[`${stage}_${matchNum}`]) state.knockoutScores[`${stage}_${matchNum}`] = {s1:'', s2:'', p1:'', p2:''};
+            state.knockoutScores[`${stage}_${matchNum}`][field] = val;
+            saveState();
+            renderApp();
+        };
+
+        window.setQuinielaBet = function(id, val) {
+            state.quinielaBets[id] = val;
+            const qIdx = state.quinielas.findIndex(q => q.id === state.currentQuinielaId);
+            if (qIdx !== -1) {
+                state.quinielas[qIdx].bets[id] = val;
+            }
+            saveState();
+            renderApp();
+        };
+
+        window.selectQuiniela = function(id) {
+            const q = state.quinielas.find(x => x.id === id);
+            if (q) {
+                state.currentQuinielaId = id;
+                state.activeQuinielaMatches = [...q.matches];
+                state.quinielaBets = {...q.bets};
+                renderApp();
+            }
+        };
+
+        window.deleteQuiniela = function(id) {
+            if (state.quinielas.length <= 1) return;
+            state.quinielas = state.quinielas.filter(q => q.id !== id);
+            if (state.currentQuinielaId === id) {
+                const first = state.quinielas[0];
+                state.currentQuinielaId = first.id;
+                state.activeQuinielaMatches = [...first.matches];
+                state.quinielaBets = {...first.bets};
+            }
+            saveState();
+            renderApp();
+        };
+
+        window.openRenameModal = function(id, currentName) {
+            state.renameId = id;
+            state.renameText = currentName;
+            state.showRenameModal = true;
+            renderApp();
+        };
+
+        window.closeRenameModal = function() {
+            state.showRenameModal = false;
+            renderApp();
+        };
+
+        window.saveRename = function() {
+            const q = state.quinielas.find(x => x.id === state.renameId);
+            if (q && state.renameText.trim() !== '') {
+                q.name = state.renameText.trim();
+                saveState();
+            }
+            state.showRenameModal = false;
+            renderApp();
+        };
+
+        window.openQuinielaModal = function() {
+            state.customSize = state.activeQuinielaMatches.length;
+            state.customSelections = state.activeQuinielaMatches.map(m => ({ matchRef: `${m.group}_${m.idx}`, bet: m.defaultBet || 'L' }));
+            state.showQuinielaModal = true;
+            renderApp();
+        };
+
+        window.closeQuinielaModal = function() { state.showQuinielaModal = false; renderApp(); };
+
+        window.changeCustomSize = function(val) {
+            let num = parseInt(val);
+            if (isNaN(num) || num < 1) num = 1;
+            if (num > 72) num = 72;
+            state.customSize = num;
+            while(state.customSelections.length < num) state.customSelections.push({ matchRef: '', bet: 'L' });
+            state.customSelections = state.customSelections.slice(0, num);
+            renderApp();
+        };
+
+        window.updateCustomSelection = function(i, field, val) {
+            state.customSelections[i][field] = val;
+            renderApp();
+        };
+
+        window.saveCustomQuiniela = function() {
+            const allMatchesList = [];
+            Object.keys(groupsData).forEach(group => {
+                const matches = generateGroupMatches(group, groupsData[group]);
+                matches.forEach((m, idx) => {
+                    allMatchesList.push({ group, idx, t1: m.t1, t2: m.t2 });
+                });
+            });
+
+            const newQuiniela = state.customSelections.map((sel, i) => {
+                if(!sel.matchRef) return null;
+                const matchParts = sel.matchRef.split('_');
+                const group = matchParts[0];
+                const idx = parseInt(matchParts[1]);
+                const matchDetails = allMatchesList.find(m => m.group === group && m.idx === idx);
+                if(!matchDetails) return null;
+                return { id: i + 1, group, idx, t1: matchDetails.t1, t2: matchDetails.t2, defaultBet: sel.bet };
+            }).filter(Boolean);
+            
+            newQuiniela.forEach((q, i) => q.id = i + 1);
+            
+            const newBets = {};
+            newQuiniela.forEach(m => newBets[m.id] = m.defaultBet);
+            
+            const newId = Date.now();
+            const newName = `Mi Quiniela ${state.quinielas.length + 1}`;
+            
+            state.quinielas.push({
+                id: newId,
+                name: newName,
+                matches: newQuiniela,
+                bets: newBets
+            });
+            
+            state.currentQuinielaId = newId;
+            state.activeQuinielaMatches = newQuiniela;
+            state.quinielaBets = newBets;
+            
+            state.showQuinielaModal = false;
+            saveState();
+            renderApp();
+        };
+
+        window.loadDefaultQuiniela = function() {
+            state.activeQuinielaMatches = [...quinielaMatchesBase];
+            const initial = {};
+            quinielaMatchesBase.forEach(m => initial[m.id] = m.defaultBet);
+            state.quinielaBets = initial;
+            saveState();
+            renderApp();
+        };
+
+        function renderApp() {
+            const app = document.getElementById('app');
+            const st = getStandings();
+
+            let headerHtml = `
+            <header class="bg-gradient-to-r from-blue-900 to-indigo-900 border-b border-blue-800 shadow-xl sticky top-0 z-10">
+                <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <div class="flex flex-col items-center sm:items-start space-y-1">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                            <h1 class="text-xl font-black tracking-tight text-white uppercase">Mundial <span class="text-yellow-400">2026</span> Tracker</h1>
+                        </div>
+                        <div class="flex flex-wrap gap-0.5 justify-center sm:justify-start max-w-[280px] sm:max-w-md mt-1">
+                            ${Object.values(teamCodes).map(code => `<img src="https://flagcdn.com/w20/${code}.png" class="w-4 h-3 sm:w-5 sm:h-3.5 object-cover rounded-[1px] opacity-90 shadow-sm" />`).join('')}
+                        </div>
+                    </div>
+                    <nav class="flex flex-wrap justify-center gap-2 bg-slate-900/50 p-1 rounded-lg text-sm">
+                        <button onclick="setTab('grupos')" class="px-3 py-1.5 rounded-md font-semibold transition-all ${state.activeTab === 'grupos' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}">Grupos</button>
+                        <button onclick="setTab('tablas')" class="px-3 py-1.5 rounded-md font-semibold transition-all ${state.activeTab === 'tablas' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}">Tablas</button>
+                        <button onclick="setTab('eliminatorias')" class="px-3 py-1.5 rounded-md font-semibold transition-all ${state.activeTab === 'eliminatorias' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}">Eliminatorias</button>
+                        <button onclick="setTab('apuesta')" class="px-3 py-1.5 rounded-md font-semibold transition-all ${state.activeTab === 'apuesta' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}">Mi Quiniela</button>
+                    </nav>
+                </div>
+            </header>`;
+
+            let contentHtml = '<main class="max-w-[1400px] mx-auto px-2 sm:px-4 py-6 fade-in">';
+
+            if (state.activeTab === 'grupos') {
+                contentHtml += '<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">';
+                Object.keys(groupsData).forEach(group => {
+                    const matches = generateGroupMatches(group, groupsData[group]);
+                    contentHtml += `
+                    <div class="bg-slate-800/80 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-slate-700">
+                        <div class="flex items-center mb-3 pb-2 border-b border-slate-700">
+                            <h2 class="text-lg font-bold text-white ml-2">Grupo ${group}</h2>
+                        </div>
+                        <div class="space-y-2">`;
+                    
+                    matches.forEach((match, idx) => {
+                        const score = state.groupScores[`${group}_${idx}`] || { t1: '', t2: '' };
+                        const s1 = score.t1 !== '' ? parseInt(score.t1) : null;
+                        const s2 = score.t2 !== '' ? parseInt(score.t2) : null;
+                        const t1Wins = s1 !== null && s2 !== null && s1 > s2;
+                        const t2Wins = s1 !== null && s2 !== null && s2 > s1;
+                        const isDraw = s1 !== null && s2 !== null && s1 === s2;
+
+                        let t1Class = 'text-slate-300';
+                        let t2Class = 'text-slate-300';
+                        
+                        if (t1Wins) { t1Class = 'text-green-400 font-bold'; t2Class = 'text-red-400'; }
+                        else if (t2Wins) { t2Class = 'text-green-400 font-bold'; t1Class = 'text-red-400'; }
+                        else if (isDraw) { t1Class = 'text-yellow-400 font-bold'; t2Class = 'text-yellow-400 font-bold'; }
+
+                        contentHtml += `
+                        <div class="flex flex-col gap-0.5 p-1 bg-slate-900/60 rounded border border-slate-700/50">
+                            <div class="text-[9px] leading-none text-slate-400 text-center uppercase tracking-widest cursor-help" title="${match.venue}">${match.date}</div>
+                            <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
+                                <div class="flex items-center gap-1.5 min-w-0 ${t1Class}">
+                                    ${getFlag(match.t1)}
+                                    <span class="truncate text-xs sm:text-sm" title="${match.t1}">${match.t1}</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <input type="number" min="0" value="${score.t1 ?? ''}" oninput="setScore('${group}', ${idx}, 't1', this.value)" class="w-6 h-6 sm:w-8 sm:h-8 text-center text-xs sm:text-sm bg-slate-950 border border-slate-600 rounded text-white focus:border-blue-500 font-bold p-0" />
+                                    <span class="text-slate-500 text-xs">-</span>
+                                    <input type="number" min="0" value="${score.t2 ?? ''}" oninput="setScore('${group}', ${idx}, 't2', this.value)" class="w-6 h-6 sm:w-8 sm:h-8 text-center text-xs sm:text-sm bg-slate-950 border border-slate-600 rounded text-white focus:border-blue-500 font-bold p-0" />
+                                </div>
+                                <div class="flex items-center justify-end gap-1.5 min-w-0 ${t2Class}">
+                                    <span class="truncate text-xs sm:text-sm text-right" title="${match.t2}">${match.t2}</span>
+                                    ${getFlag(match.t2)}
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    contentHtml += `</div></div>`;
+                });
+                contentHtml += `</div>`;
+            }
+
+            else if (state.activeTab === 'tablas') {
+                contentHtml += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">';
+                Object.keys(st).forEach(group => {
+                    contentHtml += `
+                    <div class="bg-slate-800/80 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-slate-700 overflow-hidden">
+                        <div class="flex items-center mb-2"><h3 class="text-md font-bold text-white ml-2">Grupo ${group}</h3></div>
+                        <table class="w-full text-xs text-left text-slate-300 table-fixed">
+                            <thead class="bg-slate-900/80 text-slate-400">
+                                <tr><th class="px-1 py-1 w-1/2">Equipo</th><th class="px-1 py-1 text-center">Pts</th><th class="px-1 py-1 text-center">J</th><th class="px-1 py-1 text-center">DG</th></tr>
+                            </thead>
+                            <tbody>`;
+                    st[group].forEach(([team, stats], idx) => {
+                        contentHtml += `
+                        <tr class="border-b border-slate-700/50 ${idx < 2 ? 'bg-green-900/30' : ''} ${idx === 2 ? 'bg-yellow-900/30' : ''}">
+                            <td class="px-1 py-1.5 font-medium text-white flex items-center gap-1.5 min-w-0">
+                                <span class="text-slate-500 w-2 text-[10px]">${idx + 1}</span>
+                                ${getFlag(team, "w-4 h-3 object-cover rounded-[1px] flex-shrink-0")}
+                                <span class="truncate" title="${team}">${team}</span>
+                            </td>
+                            <td class="px-1 py-1.5 text-center font-bold text-blue-400">${stats.pts}</td>
+                            <td class="px-1 py-1.5 text-center">${stats.p}</td>
+                            <td class="px-1 py-1.5 text-center">${stats.gd > 0 ? \`+\${stats.gd}\` : stats.gd}</td>
+                        </tr>`;
+                    });
+                    contentHtml += `</tbody></table></div>`;
+                });
+                contentHtml += `</div>`;
+            }
+
+            else if (state.activeTab === 'eliminatorias') {
+                const renderStage = (stageName, stageKey, matchesArr) => {
+                    let html = `<div><h2 class="text-xl font-black text-white mb-4 border-b border-slate-700 pb-1">${stageName}</h2>`;
+                    html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">`;
+                    
+                    matchesArr.forEach((_, i) => {
+                        const matchNum = i + 1;
+                        const dateObj = stageKey === '16vos' ? roundOf32Matchups[i] :
+                                        stageKey === '8vos' ? roundOf16Dates[i] :
+                                        stageKey === '4tos' ? quarterFinalDates[i] :
+                                        stageKey === 'semis' ? semiFinalDates[i] : finalDate;
+
+                        const t1 = getKnockoutTeam(stageKey, matchNum, 0);
+                        const t2 = getKnockoutTeam(stageKey, matchNum, 1);
+                        const score = state.knockoutScores[`${stageKey}_${matchNum}`] || { s1: '', s2: '', p1: '', p2: '' };
+                        const s1 = score.s1 !== '' ? parseInt(score.s1) : null;
+                        const s2 = score.s2 !== '' ? parseInt(score.s2) : null;
+                        
+                        const t1Wins = getWinnerKnockout(stageKey, matchNum) === t1 && t1 !== null;
+                        const t2Wins = getWinnerKnockout(stageKey, matchNum) === t2 && t2 !== null;
+                        const isDraw = s1 !== null && s2 !== null && s1 === s2;
+
+                        const drawHtml = isDraw ? `<input type="number" min="0" value="${score.p1}" oninput="setKnockout('${stageKey}', ${matchNum}, 'p1', this.value)" class="w-5 h-5 text-[10px] text-center bg-yellow-900/80 border border-yellow-500 rounded text-yellow-200 focus:outline-none p-0" placeholder="P" />` : '';
+                        const drawHtml2 = isDraw ? `<input type="number" min="0" value="${score.p2}" oninput="setKnockout('${stageKey}', ${matchNum}, 'p2', this.value)" class="w-5 h-5 text-[10px] text-center bg-yellow-900/80 border border-yellow-500 rounded text-yellow-200 focus:outline-none p-0" placeholder="P" />` : '';
+
+                        const renderTeamInfo = (teamIdx, teamName, isWinner) => {
+                            let code = stageKey === '16vos' ? (teamIdx === 0 ? dateObj.t1 : dateObj.t2) : null;
+                            if (code && code.startsWith('3 ')) {
+                                const matchKey = `16vos_${matchNum}_t${teamIdx+1}`;
+                                const groupsArr = code.substring(2).split('/');
+                                const thirdPlaceTeams = groupsArr.map(g => getThirdPlaceTeam(g)).filter(t => t);
+                                
+                                let optionsHtml = `<option value="">Sel...</option>`;
+                                thirdPlaceTeams.forEach(t => {
+                                    const selected = (state.wildcardSelections[matchKey] === t) ? 'selected' : '';
+                                    optionsHtml += `<option value="${t}" ${selected}>${t}</option>`;
+                                });
+
+                                return `
+                                <div class="flex items-center gap-1 flex-1 min-w-0">
+                                    <span class="text-[8px] font-bold text-slate-300 bg-slate-800 px-0.5 rounded border border-slate-600 shrink-0">${code}</span>
+                                    ${teamName ? getFlag(teamName, "w-4 h-3 object-cover rounded-[1px] flex-shrink-0") : ''}
+                                    <select onchange="window.setWildcard('${matchKey}', this.value)" class="bg-slate-900 border border-slate-600 text-[10px] text-white rounded focus:border-blue-500 flex-1 p-0.5 truncate min-w-0 w-full">
+                                        ${optionsHtml}
+                                    </select>
+                                </div>`;
+                            } else {
+                                let badge = code ? `<span class="text-[8px] font-bold text-slate-300 bg-slate-800 px-0.5 rounded border border-slate-600 shrink-0">${code}</span>` : '';
+                                return `
+                                <div class="flex items-center gap-1.5 overflow-hidden min-w-0">
+                                    ${badge}
+                                    ${teamName ? getFlag(teamName, "w-5 h-3.5 object-cover rounded-[1px] flex-shrink-0") : '<div class="w-5 h-3.5 bg-slate-700 rounded-[1px] flex-shrink-0"></div>'}
+                                    <span class="truncate text-xs text-white font-medium ${isWinner?'text-green-300':''}">${teamName || 'TBD'}</span>
+                                </div>`;
+                            }
+                        };
+
+                        html += `
+                        <div class="bg-slate-800/90 backdrop-blur-md rounded-lg p-2 border border-slate-600 shadow-md flex flex-col gap-1.5">
+                            <div class="text-[10px] text-slate-400 text-center uppercase tracking-wider font-semibold border-b border-slate-700 pb-0.5 cursor-help" title="${dateObj.venue}">
+                                Partido ${dateObj.id} | <span class="hover:text-white transition-colors">${dateObj.date}</span>
+                            </div>
+                            <div class="flex items-center justify-between p-1 rounded ${t1Wins ? 'bg-green-900/60 border border-green-500/50' : ''}">
+                                ${renderTeamInfo(0, t1, t1Wins)}
+                                <div class="flex items-center gap-1 shrink-0">
+                                    ${drawHtml}
+                                    <input type="number" min="0" value="${score.s1}" oninput="setKnockout('${stageKey}', ${matchNum}, 's1', this.value)" class="w-6 h-6 text-center text-xs bg-slate-950 border border-slate-500 rounded text-white font-bold focus:border-blue-500 p-0" />
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-1 rounded ${t2Wins ? 'bg-green-900/60 border border-green-500/50' : ''}">
+                                ${renderTeamInfo(1, t2, t2Wins)}
+                                <div class="flex items-center gap-1 shrink-0">
+                                    ${drawHtml2}
+                                    <input type="number" min="0" value="${score.s2}" oninput="setKnockout('${stageKey}', ${matchNum}, 's2', this.value)" class="w-6 h-6 text-center text-xs bg-slate-950 border border-slate-500 rounded text-white font-bold focus:border-blue-500 p-0" />
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    return html + `</div></div>`;
+                };
+
+                contentHtml += `<div class="space-y-8">`;
+                contentHtml += renderStage('16vos de Final', '16vos', Array(16).fill(0));
+                contentHtml += renderStage('Octavos de Final', '8vos', Array(8).fill(0));
+                contentHtml += renderStage('Cuartos de Final', '4tos', Array(4).fill(0));
+                
+                contentHtml += `<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">`;
+                contentHtml += renderStage('Semifinales', 'semis', Array(2).fill(0));
+                contentHtml += `<div><h2 class="text-2xl font-black text-yellow-500 mb-4 border-b border-yellow-700/50 pb-1">La Gran Final</h2>
+                                <div class="p-4 bg-gradient-to-br from-yellow-900/30 to-slate-800 border border-yellow-700/50 rounded-xl">
+                                ${renderStage('', 'final', [0]).replace('<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">', '<div class="grid grid-cols-1 gap-3">')}
+                                </div></div>`;
+                contentHtml += `</div></div>`;
+            }
+
+            else if (state.activeTab === 'apuesta') {
+                contentHtml += `
+                <div class="max-w-4xl mx-auto bg-slate-800/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-slate-700">
+                    
+                    <div class="flex flex-col mb-6 pb-4 border-b border-slate-700 gap-4">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                                ⚽ Mis Quinielas
+                            </h2>
+                            <button onclick="openQuinielaModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded shadow transition-all">+ Nueva Quiniela</button>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2">
+                            ${state.quinielas.map(q => `
+                                <div class="flex items-center bg-slate-900 rounded-lg border ${state.currentQuinielaId === q.id ? 'border-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.4)]' : 'border-slate-600'} p-1 transition-all">
+                                    <button onclick="selectQuiniela(${q.id})" class="px-3 py-1.5 text-sm font-bold ${state.currentQuinielaId === q.id ? 'text-purple-400' : 'text-slate-400 hover:text-white'} transition-colors">${q.name}</button>
+                                    <div class="flex border-l border-slate-700 ml-1 pl-1 gap-1">
+                                        <button onclick="openRenameModal(${q.id}, '${q.name}')" class="p-1 sm:p-1.5 text-slate-400 hover:text-blue-400 transition-colors" title="Renombrar">✏️</button>
+                                        ${state.quinielas.length > 1 ? `<button onclick="deleteQuiniela(${q.id})" class="p-1 sm:p-1.5 text-slate-400 hover:text-red-400 transition-colors" title="Eliminar">🗑️</button>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-[auto_1fr_auto_1fr] items-center gap-2 mb-4 text-xs sm:text-sm font-bold text-slate-400 uppercase text-center border-b border-slate-700 pb-2">
+                        <div class="w-6">#</div><div class="text-right pr-2 sm:pr-4">Local (L)</div>
+                        <div class="flex justify-center space-x-1 w-[128px]">
+                            <div class="w-10">L</div><div class="w-10">E</div><div class="w-10">V</div>
+                        </div>
+                        <div class="text-left pl-2 sm:pl-4">Visita (V)</div>
+                    </div>
+                    <div class="space-y-2">`;
+                
+                state.activeQuinielaMatches.forEach(match => {
+                    const bet = state.quinielaBets[match.id];
+                    const actual = state.groupScores[`${match.group}_${match.idx}`];
+                    let frameClass = "border-slate-700 bg-slate-800/60";
+                    
+                    if (actual && actual.t1 !== '' && actual.t2 !== '' && actual.t1 !== undefined && actual.t2 !== undefined) {
+                        const actS1 = parseInt(actual.t1);
+                        const actS2 = parseInt(actual.t2);
+                        let actualOutcome = 'E';
+                        if (actS1 > actS2) actualOutcome = 'L';
+                        if (actS2 > actS1) actualOutcome = 'V';
+                        if (bet === actualOutcome) frameClass = "border-green-500 bg-green-900/60 shadow-[0_0_10px_rgba(34,197,94,0.3)]";
+                        else frameClass = "border-red-500 bg-red-900/60 shadow-[0_0_10px_rgba(239,68,68,0.3)]";
+                    }
+
+                    contentHtml += `
+                    <div class="grid grid-cols-[auto_1fr_auto_1fr] items-center gap-1 sm:gap-2 p-2 rounded-lg border-2 transition-all duration-300 ${frameClass}">
+                        <div class="text-slate-500 font-mono w-6 text-center text-sm">${match.id}</div>
+                        <div class="flex items-center justify-end gap-2 p-1 text-slate-300 min-w-0">
+                            <span class="truncate text-xs sm:text-base font-semibold">${match.t1}</span>
+                            ${getFlag(match.t1)}
+                        </div>
+                        <div class="flex justify-center space-x-1 shrink-0 bg-slate-900/80 rounded p-1 border border-slate-700">
+                            ${['L','E','V'].map(b => `
+                                <button onclick="setQuinielaBet(${match.id}, '${b}')" class="w-8 h-8 sm:w-10 sm:h-10 rounded font-bold text-xs sm:text-sm transition-all ${bet === b ? 'bg-purple-600 text-white shadow-inner scale-105' : 'bg-slate-800 text-slate-400 hover:bg-slate-600'}">${b}</button>
+                            `).join('')}
+                        </div>
+                        <div class="flex items-center justify-start gap-2 p-1 text-slate-300 min-w-0">
+                            ${getFlag(match.t2)}
+                            <span class="truncate text-xs sm:text-base font-semibold">${match.t2}</span>
+                        </div>
+                    </div>`;
+                });
+                contentHtml += `</div></div>`;
+            }
+
+            contentHtml += '</main>';
+
+            if (state.showQuinielaModal) {
+                const allMatchesList = [];
+                Object.keys(groupsData).forEach(group => {
+                    const matches = generateGroupMatches(group, groupsData[group]);
+                    matches.forEach((m, idx) => allMatchesList.push({ group, idx, label: `Gpo ${group}: ${m.t1} vs ${m.t2}` }));
+                });
+
+                contentHtml += `
+                <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto fade-in">
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 w-full max-w-2xl my-auto">
+                        <h3 class="text-xl font-bold text-white mb-4">Configurar Nueva Quiniela</h3>
+                        <div class="mb-4">
+                            <label class="text-sm text-slate-400 block mb-1">Cantidad de Partidos:</label>
+                            <input type="number" min="1" max="72" value="${state.customSize}" onchange="changeCustomSize(this.value)" class="bg-slate-800 text-white border border-slate-700 rounded px-3 py-2 w-32 focus:outline-none focus:border-blue-500" />
+                        </div>
+                        <div class="max-h-[50vh] overflow-y-auto space-y-3 mb-6 pr-2">
+                            ${state.customSelections.map((sel, i) => `
+                            <div class="flex flex-col sm:flex-row gap-2 items-center bg-slate-800 p-2 rounded border border-slate-700">
+                                <span class="text-slate-500 font-mono w-6 text-center">${i+1}</span>
+                                <select onchange="updateCustomSelection(${i}, 'matchRef', this.value)" class="flex-1 bg-slate-950 text-slate-300 border border-slate-600 rounded p-2 text-sm w-full sm:w-auto focus:outline-none focus:border-blue-500">
+                                    <option value="">-- Selecciona un partido --</option>
+                                    ${allMatchesList.map(m => `<option value="${m.group}_${m.idx}" ${sel.matchRef === `${m.group}_${m.idx}` ? 'selected' : ''}>${m.label}</option>`).join('')}
+                                </select>
+                                <div class="flex gap-1 shrink-0">
+                                    ${['L','E','V'].map(b => `<button onclick="updateCustomSelection(${i}, 'bet', '${b}')" class="w-10 h-10 rounded font-bold text-sm transition-all ${sel.bet === b ? 'bg-purple-600 text-white shadow-inner scale-105' : 'bg-slate-900 text-slate-400 border border-slate-600 hover:bg-slate-700'}">${b}</button>`).join('')}
+                                </div>
+                            </div>
+                            `).join('')}
+                        </div>
+                        <div class="flex justify-end gap-3 pt-4 border-t border-slate-700">
+                            <button onclick="closeQuinielaModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded transition-all">Cancelar</button>
+                            <button onclick="saveCustomQuiniela()" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded shadow transition-all">Guardar Quiniela</button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            if (state.showRenameModal) {
+                contentHtml += `
+                <div class="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 fade-in">
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 w-full max-w-sm my-auto">
+                        <h3 class="text-lg font-bold text-white mb-4">Renombrar Quiniela</h3>
+                        <input type="text" value="${state.renameText}" oninput="state.renameText = this.value" class="bg-slate-800 text-white border border-slate-600 rounded px-3 py-2 w-full focus:outline-none focus:border-purple-500 mb-6" placeholder="Nombre de la quiniela..." />
+                        <div class="flex justify-end gap-3">
+                            <button onclick="closeRenameModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded transition-all text-sm">Cancelar</button>
+                            <button onclick="saveRename()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded shadow transition-all text-sm">Guardar</button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            app.innerHTML = headerHtml + contentHtml;
+        }
+
+        window.onload = function() {
+            loadState();
+            renderApp();
+        };
+
+        // --- INICIO DEL REGISTRO DEL SERVICE WORKER (PWA) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(registration => {
+                    console.log('ServiceWorker registrado con éxito:', registration.scope);
+                }).catch(error => {
+                    console.log('Fallo el registro del ServiceWorker:', error);
+                });
+            });
+        }
+        // --- FIN DEL REGISTRO DEL SERVICE WORKER ---
+    </script>
+</body>
+</html>
