@@ -33,9 +33,6 @@
     <div id="app"></div>
 
     <script>
-        // TODO TU CÓDIGO JAVASCRIPT SE MANTIENE EXACTAMENTE IGUAL AQUÍ
-        // (Pega aquí todo el contenido desde const teamCodes = {...} hasta el window.onload)
-        
         const teamCodes = {
             'México': 'mx', 'Sudáfrica': 'za', 'Corea del Sur': 'kr', 'Rep. Checa': 'cz',
             'Canadá': 'ca', 'Bosnia': 'ba', 'Qatar': 'qa', 'Suiza': 'ch',
@@ -572,7 +569,7 @@
                             </td>
                             <td class="px-1 py-1.5 text-center font-bold text-blue-400">${stats.pts}</td>
                             <td class="px-1 py-1.5 text-center">${stats.p}</td>
-                            <td class="px-1 py-1.5 text-center">${stats.gd > 0 ? \`+\${stats.gd}\` : stats.gd}</td>
+                            <td class="px-1 py-1.5 text-center">${stats.gd > 0 ? '+' + stats.gd : stats.gd}</td>
                         </tr>`;
                     });
                     contentHtml += `</tbody></table></div>`;
@@ -806,7 +803,7 @@
             renderApp();
         };
 
-        // --- INICIO DEL REGISTRO DEL SERVICE WORKER (PWA) ---
+        // Registro del Service Worker (PWA)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(registration => {
@@ -816,7 +813,6 @@
                 });
             });
         }
-        // --- FIN DEL REGISTRO DEL SERVICE WORKER ---
     </script>
 </body>
 </html>
